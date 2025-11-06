@@ -10,10 +10,6 @@ import {
   Clock,
   Activity,
 } from "lucide-react";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useDepartmentStore } from "@/store/departmentStore";
-import { useActivityStore } from "@/store/activityStore";
-import { useNavigate } from "react-router";
 import {
   BarChart,
   Bar,
@@ -28,6 +24,11 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useNavigate } from "react-router";
+import { useEmployeeStore } from "@/store/employeeStore";
+import { useDepartmentStore } from "@/store/departmentStore";
+import { useActivityStore } from "@/store/activityStore";
+
 
 export default function AdminDashboard() {
   const { employees } = useEmployeeStore();
@@ -40,13 +41,11 @@ export default function AdminDashboard() {
   const onLeave = employees.filter((e) => e.status === "on_leave").length;
   const totalDepartments = departments.length;
 
-  // Department chart data
   const chartData = departments.map((dept) => ({
     name: dept.name,
     employees: dept.employeeCount,
   }));
 
-  // Employee growth data (mock)
   const growthData = [
     { month: "Jan", employees: 45 },
     { month: "Feb", employees: 52 },
@@ -56,48 +55,17 @@ export default function AdminDashboard() {
     { month: "Jun", employees: totalEmployees },
   ];
 
-  // Attendance rate data (mock)
   const attendanceData = [
     { name: "Present", value: 85 },
     { name: "Absent", value: 10 },
     { name: "On Leave", value: 5 },
   ];
 
-  const COLORS = [
-    "hsl(var(--success))",
-    "hsl(var(--destructive))",
-    "hsl(var(--warning))",
-  ];
-
   const stats = [
-    {
-      title: "Total Employees",
-      value: totalEmployees,
-      icon: Users,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
-    },
-    {
-      title: "Active Employees",
-      value: activeEmployees,
-      icon: TrendingUp,
-      color: "text-success",
-      bgColor: "bg-success/10",
-    },
-    {
-      title: "On Leave",
-      value: onLeave,
-      icon: UserX,
-      color: "text-warning",
-      bgColor: "bg-warning/10",
-    },
-    {
-      title: "Departments",
-      value: totalDepartments,
-      icon: Building2,
-      color: "text-accent",
-      bgColor: "bg-accent/10",
-    },
+    { title: "Total Employees", value: totalEmployees, icon: Users },
+    { title: "Active Employees", value: activeEmployees, icon: TrendingUp },
+    { title: "On Leave", value: onLeave, icon: UserX },
+    { title: "Departments", value: totalDepartments, icon: Building2 },
   ];
 
   const quickActions = [
@@ -106,61 +74,54 @@ export default function AdminDashboard() {
       label: "Add Employee",
       description: "Onboard a new team member",
       action: () => navigate("/admin/employees"),
-      color: "text-primary",
     },
     {
       icon: CheckCircle,
       label: "Approve Leave",
       description: "Review pending leave requests",
       action: () => {},
-      color: "text-success",
     },
     {
       icon: Activity,
       label: "View Reports",
       description: "Access detailed analytics",
       action: () => navigate("/admin/reports"),
-      color: "text-accent",
     },
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
           Overview of your organization's key metrics
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <div
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <Card
             key={stat.title}
-            // initial={{ opacity: 0, y: 20 }}
-            // animate={{ opacity: 1, y: 0 }}
-            // transition={{ delay: index * 0.1 }}
+            className="hover:shadow-md transition-shadow duration-200"
           >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <div className={`rounded-lg p-2 ${stat.bgColor}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          </div>
+            <CardHeader className="flex flex-row items-center justify-between pb-1">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              <stat.icon className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-semibold">{stat.value}</div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Employee Growth */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Employee Growth Trend</CardTitle>
@@ -168,30 +129,23 @@ export default function AdminDashboard() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={growthData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                />
-                <XAxis
-                  dataKey="month"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" fontSize={12} tickLine={false} />
+                <YAxis fontSize={12} tickLine={false} />
                 <Tooltip />
                 <Line
                   type="monotone"
                   dataKey="employees"
-                  stroke="hsl(var(--primary))"
+                  stroke="currentColor"
                   strokeWidth={2}
-                  dot={{ fill: "hsl(var(--primary))" }}
+                  dot={{ r: 3 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
+        {/* Attendance */}
         <Card>
           <CardHeader>
             <CardTitle>Attendance Rate</CardTitle>
@@ -205,29 +159,23 @@ export default function AdminDashboard() {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={80}
-                  paddingAngle={5}
+                  paddingAngle={3}
                   dataKey="value"
                 >
-                  {attendanceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                  {attendanceData.map((_, i) => (
+                    <Cell key={i} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {attendanceData.map((entry, index) => (
+            <div className="mt-4 space-y-2 text-sm">
+              {attendanceData.map((entry) => (
                 <div
                   key={entry.name}
-                  className="flex items-center justify-between text-sm"
+                  className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: COLORS[index] }}
-                    />
-                    <span>{entry.name} </span>
-                  </div>
+                  <span>{entry.name}</span>
                   <span className="font-medium">{entry.value}%</span>
                 </div>
               ))}
@@ -238,6 +186,7 @@ export default function AdminDashboard() {
 
       {/* Charts Row 2 */}
       <div className="grid gap-4 md:grid-cols-2">
+        {/* Employees by Department */}
         <Card>
           <CardHeader>
             <CardTitle>Employees by Department</CardTitle>
@@ -245,28 +194,17 @@ export default function AdminDashboard() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                />
-                <XAxis
-                  dataKey="name"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" fontSize={12} tickLine={false} />
+                <YAxis fontSize={12} tickLine={false} />
                 <Tooltip />
-                <Bar
-                  dataKey="employees"
-                  fill="hsl(var(--primary))"
-                  radius={[8, 8, 0, 0]}
-                />
+                <Bar dataKey="employees" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
+        {/* Recent Activity */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent Activity</CardTitle>
@@ -274,22 +212,12 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4 max-h-[300px] overflow-y-auto">
-              {activities.slice(0, 6).map((activity, index) => (
+              {activities.slice(0, 6).map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 pb-3 border-b last:border-0"
+                  className="flex items-start gap-3 border-b pb-3 last:border-none"
                 >
-                  <div
-                    className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${
-                      activity.type === "employee"
-                        ? "bg-primary"
-                        : activity.type === "department"
-                        ? "bg-accent"
-                        : activity.type === "leave"
-                        ? "bg-warning"
-                        : "bg-success"
-                    }`}
-                  />
+                  <div className="h-2 w-2 rounded-full bg-muted flex-shrink-0 mt-2" />
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium">{activity.action}</p>
                     <p className="text-xs text-muted-foreground">
@@ -309,25 +237,22 @@ export default function AdminDashboard() {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 md:grid-cols-3">
-            {quickActions.map((action, index) => (
-              <div
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {quickActions.map((action) => (
+              <Button
                 key={action.label}
+                variant="outline"
+                onClick={action.action}
+                className="h-auto flex flex-col items-start gap-2 p-4 hover:bg-accent/10 transition-colors"
               >
-                <Button
-                  variant="outline"
-                  className="w-full h-auto p-4 flex flex-col items-start gap-2 hover:border-primary hover:bg-primary/5 transition-all"
-                  onClick={action.action}
-                >
-                  <action.icon className={`h-5 w-5 ${action.color}`} />
-                  <div className="text-left">
-                    <h3 className="font-medium">{action.label}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {action.description}
-                    </p>
-                  </div>
-                </Button>
-              </div>
+                <action.icon className="h-5 w-5 text-muted-foreground" />
+                <div className="text-left">
+                  <h3 className="font-medium">{action.label}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {action.description}
+                  </p>
+                </div>
+              </Button>
             ))}
           </div>
         </CardContent>
@@ -343,17 +268,17 @@ export default function AdminDashboard() {
             {employees.slice(0, 5).map((employee) => (
               <div
                 key={employee.id}
-                className="flex items-center justify-between rounded-lg border p-3"
+                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent/5 transition-colors"
               >
                 <div>
                   <p className="font-medium">{employee.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {employee.role} • {employee.department}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{employee.status}</p>
-                  <p className="text-xs text-muted-foreground">
+                <div className="text-right text-xs">
+                  <p className="font-medium capitalize">{employee.status}</p>
+                  <p className="text-muted-foreground">
                     Joined {new Date(employee.joinDate).toLocaleDateString()}
                   </p>
                 </div>
@@ -365,3 +290,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

@@ -20,36 +20,31 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 import { Building2 } from "lucide-react";
-import type { Role } from "@/types";
 import { motion as m, AnimatePresence } from "motion/react";
+import type { Role } from "@/types";
 
-export default function Login() {
+export default function Register() {
+  const [name, setName] = useState("");
+  const [fatherName, setFatherName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("employee");
-  const [employeeCode, setEmployeeCode] = useState("");
-  const { login } = useAuthStore();
+  const [employeeId, setEmployeeId] = useState("");
+  const { register } = useAuthStore();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const success = login(email, password, role);
-
-    if (success) {
-      toast({
-        title: "Login successful",
-        description: `Welcome back!`,
+    register({ name, fatherName, email, password, role, employeeId: role === "employee" ? employeeId : undefined })
+      .then((ok) => {
+        if (ok) {
+          toast({ title: "Account created", description: "Welcome!" });
+          navigate(role === "admin" ? "/admin/dashboard" : "/employee/dashboard");
+        } else {
+          toast({ title: "Signup failed", description: "Please check your details.", variant: "destructive" });
+        }
       });
-      navigate(role === "admin" ? "/admin/dashboard" : "/employee/dashboard");
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -64,10 +59,38 @@ export default function Login() {
           <CardTitle className="text-2xl font-bold">
             Employee Management
           </CardTitle>
-          <CardDescription>Sign in to access your dashboard</CardDescription>
+          <CardDescription>Sign up to create your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <m.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-2"
+            >
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                placeholder="Enter your name..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </m.div>
+            <m.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-2"
+            >
+              <Label htmlFor="fatherName">Father's Name</Label>
+              <Input
+                id="fatherName"
+                placeholder="Enter your father's name..."
+                value={fatherName}
+                onChange={(e) => setFatherName(e.target.value)}
+                required
+              />
+            </m.div>
             <m.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -98,17 +121,13 @@ export default function Login() {
                 required
               />
             </m.div>
-
             <m.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               className="space-y-2"
             >
               <Label htmlFor="role">Role</Label>
-              <Select
-                value={role}
-                onValueChange={(value) => setRole(value as Role)}
-              >
+              <Select value={role} onValueChange={(v) => setRole(v as Role)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -126,12 +145,12 @@ export default function Login() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="space-y-2"
                 >
-                  <Label htmlFor="code">Employee Code</Label>
+                  <Label htmlFor="employeeId">Employee ID</Label>
                   <Input
-                    id="employee-code"
-                    placeholder="Enter your employee code."
-                    value={employeeCode}
-                    onChange={(e) => setEmployeeCode(e.target.value)}
+                    id="employeeId"
+                    placeholder="Enter your employee ID"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     required
                   />
                 </m.div>
@@ -139,7 +158,7 @@ export default function Login() {
             </AnimatePresence>
 
             <Button type="submit" className="w-full">
-              Sign In
+              Sign Up
             </Button>
           </form>
 
@@ -151,9 +170,9 @@ export default function Login() {
             </div>
             <div className="text-center">
               <p>
-                Don't have an account?{" "}
-                <NavLink className={"ml-1 text-primary"} to={"/register"}>
-                  Sign up
+                Already have an account?{" "}
+                <NavLink className={"ml-1 text-primary"} to={"/login"}>
+                  Sign-in
                 </NavLink>
               </p>
             </div>

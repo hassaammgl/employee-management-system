@@ -33,3 +33,20 @@ export const logoutUser = asyncHandler(async (req, res) => {
         })
     }
 })
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+    return ApiResponse.success(res, {
+        message: "Current user fetched successfully",
+        data: req.user,
+    })
+})
+
+export const refreshTokens = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken
+    const { user, accessToken, refreshToken: newRefresh } = await AuthService.refresh(refreshToken)
+    TokenService.setTokens(res, { accessToken, refreshToken: newRefresh })
+    return ApiResponse.success(res, {
+        message: "Tokens refreshed",
+        data: user,
+    })
+})

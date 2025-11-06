@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 	});
 });
 // auth routes
-app.use("/api/auth", authRoutes);
+app.use("/api", authRoutes);
 
 // error handlers
 app.use(errorHandler);

@@ -24,22 +24,10 @@ export const registerSchema = Joi.object({
 		"string.empty": "Email is required",
 		"any.required": "Email is required",
 	}),
-	role: Joi.string().valid("admin", "employee").required().messages({
+	role: Joi.string().valid("admin").required().messages({
 		"any.only": "Role must be either 'admin' or 'employee'",
 		"any.required": "Role is required",
 	}),
-	employeeId: Joi.string()
-		.trim()
-		.when("role", {
-			is: "employee",
-			then: Joi.required(),
-			otherwise: Joi.forbidden(),
-		})
-		.messages({
-			"any.required": "Employee ID is required when role is employee",
-			"any.forbidden":
-				"Employee ID should not be provided for admin role",
-		}),
 	password: Joi.string().min(8).pattern(passwordRegex).required().messages({
 		"string.empty": "Password is required",
 		"string.min": "Password must be at least 8 characters long",
@@ -55,5 +43,12 @@ export const loginSchema = Joi.object({
 	}),
 	password: Joi.string().required().messages({
 		"any.required": "Password is required",
+	}),
+	employeeCode: Joi.string().required().uppercase().min(6).max(6).messages({
+		"string.empty": "Employee Code is required",
+		"string.min": "Employee Code must be at least 6 characters long",
+		"string.max": "Employee Code cannot exceed 6 characters",
+		"any.required": "Employee Code is required",
+		"string.uppercase": "Employee Code is uppercase only",
 	}),
 });

@@ -8,11 +8,15 @@ import { toast } from "@/hooks/use-toast";
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  login: (
-    email: string,
-    password: string,
-    employeeCode: string
-  ) => Promise<boolean>;
+  login: ({
+    email,
+    password,
+    employeeCode,
+  }: {
+    email: string;
+    password: string;
+    employeeCode: string;
+  }) => Promise<boolean>;
   register: (payload: {
     name: string;
     fatherName: string;
@@ -37,9 +41,9 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      login: async (email, password, employeeCode) => {
+      login: async ({ email, password, employeeCode }) => {
         try {
-          const { data } = await api.post("/auth/login", {
+          const { data } = await api.post("/login", {
             email,
             password,
             employeeCode,
@@ -51,7 +55,7 @@ export const useAuthStore = create<AuthState>()(
                 name: apiUser.name,
                 email: apiUser.email,
                 role: apiUser.role,
-                employeeId: apiUser.employeeId ?? undefined,
+                employeeCode: apiUser.employeeCode ?? undefined,
                 password: "",
               } as User)
             : null;
@@ -74,7 +78,7 @@ export const useAuthStore = create<AuthState>()(
       },
       register: async (payload) => {
         try {
-          const { data } = await api.post("/auth/register", payload);
+          const { data } = await api.post("/register", payload);
           const apiUser = data?.data as any;
           const user = apiUser
             ? ({
@@ -82,7 +86,7 @@ export const useAuthStore = create<AuthState>()(
                 name: apiUser.name,
                 email: apiUser.email,
                 role: apiUser.role,
-                employeeId: apiUser.employeeId ?? undefined,
+                employeeCode: apiUser.employeeCode,
                 password: "",
               } as User)
             : null;
@@ -102,7 +106,7 @@ export const useAuthStore = create<AuthState>()(
       },
       me: async () => {
         try {
-          const { data } = await api.get("/auth/me");
+          const { data } = await api.get("/me");
           const apiUser = data?.data as any;
           const user = apiUser
             ? ({
@@ -110,7 +114,7 @@ export const useAuthStore = create<AuthState>()(
                 name: apiUser.name,
                 email: apiUser.email,
                 role: apiUser.role,
-                employeeId: apiUser.employeeId ?? undefined,
+                employeeCode: apiUser.employeeCode ?? undefined,
                 password: "",
               } as User)
             : null;
@@ -118,8 +122,8 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           // try refresh once
           try {
-            await api.post("/auth/refresh");
-            const { data } = await api.get("/auth/me");
+            await api.post("/refresh");
+            const { data } = await api.get("/me");
             const apiUser = data?.data as any;
             const user = apiUser
               ? ({
@@ -127,7 +131,7 @@ export const useAuthStore = create<AuthState>()(
                   name: apiUser.name,
                   email: apiUser.email,
                   role: apiUser.role,
-                  employeeId: apiUser.employeeId ?? undefined,
+                  employeeCode: apiUser.employeeCode ?? undefined,
                   password: "",
                 } as User)
               : null;
@@ -150,7 +154,7 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: async () => {
         try {
-          await api.post("/auth/logout");
+          await api.post("/logout");
           toast({
             title: "Logged out",
             description: "You have been signed out.",

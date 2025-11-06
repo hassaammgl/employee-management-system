@@ -29,24 +29,28 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     const { name, email, fatherName, password } = data;
     e.preventDefault();
-    await register({
+    const ok = await register({
       name,
       fatherName,
       email,
       password,
       role: "admin",
-    }).then((ok) => {
-      if (ok) {
-        toast({ title: "Account created", description: "Welcome!" });
-        navigate("/admin/dashboard");
-      } else {
-        toast({
-          title: "Signup failed",
-          description: "Please check your details.",
-          variant: "destructive",
-        });
-      }
     });
+    
+    if (ok) {
+      // Get the updated user from the store after registration
+      const updatedUser = useAuthStore.getState().user;
+      toast({ title: "Account created", description: "Welcome!" });
+      navigate(
+        updatedUser?.role === "admin" ? "/admin/dashboard" : "/employee/dashboard"
+      );
+    } else {
+      toast({
+        title: "Signup failed",
+        description: "Please check your details.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -132,16 +136,11 @@ export default function Register() {
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p className="font-medium mb-2">Demo Credentials:</p>
-            <div className="space-y-1 text-xs">
-              <p>Admin: admin@company.com / admin123</p>
-              <p>Employee: john@company.com / employee123</p>
-            </div>
             <div className="text-center">
               <p>
                 Already have an account?{" "}
                 <NavLink className={"ml-1 text-primary"} to={"/login"}>
-                  Sign-in
+                  Login
                 </NavLink>
               </p>
             </div>

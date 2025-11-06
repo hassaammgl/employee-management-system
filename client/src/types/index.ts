@@ -8,7 +8,7 @@ export interface User {
   email: string;
   role: Role;
   password: string;
-  employeeId?: string;
+  employeeCode?: string;
 }
 
 export interface Employee {

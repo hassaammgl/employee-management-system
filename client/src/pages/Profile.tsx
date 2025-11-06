@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { useAuthStore } from "@/store/auth";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Shield } from "lucide-react";
@@ -10,7 +16,7 @@ import { User, Mail, Shield } from "lucide-react";
 export default function Profile() {
   const { user, updateProfile } = useAuthStore();
   const { toast } = useToast();
-  
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -18,12 +24,12 @@ export default function Profile() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     updateProfile({
       name: formData.name,
       email: formData.email,
     });
-    
+
     toast({
       title: "Profile updated",
       description: "Your profile has been updated successfully.",
@@ -34,17 +40,13 @@ export default function Profile() {
     <div className="max-w-2xl space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold">Profile Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account information
-        </p>
+        <p className="text-muted-foreground">Manage your account information</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
-          <CardDescription>
-            Update your personal details here
-          </CardDescription>
+          <CardDescription>Update your personal details here</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,13 +57,15 @@ export default function Profile() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="pl-9"
                   required
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <div className="relative">
@@ -70,13 +74,15 @@ export default function Profile() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="pl-9"
                   required
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               <div className="relative">
@@ -89,7 +95,7 @@ export default function Profile() {
                 />
               </div>
             </div>
-            
+
             <Button type="submit">Save Changes</Button>
           </form>
         </CardContent>
@@ -98,9 +104,7 @@ export default function Profile() {
       <Card>
         <CardHeader>
           <CardTitle>Account Information</CardTitle>
-          <CardDescription>
-            View your account details
-          </CardDescription>
+          <CardDescription>View your account details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b">
@@ -113,10 +117,18 @@ export default function Profile() {
             <span className="text-sm text-muted-foreground">User ID</span>
             <span className="font-mono text-sm">{user?.id}</span>
           </div>
-          {user?.employeeId && (
+          {user?.id && (
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-muted-foreground">Employee ID</span>
-              <span className="font-mono text-sm">{user.employeeId}</span>
+              <span className="font-mono text-sm">{user.id}</span>
+            </div>
+          )}
+          {user?.employeeCode && (
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-muted-foreground">
+                Employee Code
+              </span>
+              <span className="font-mono text-sm">{user.employeeCode}</span>
             </div>
           )}
         </CardContent>

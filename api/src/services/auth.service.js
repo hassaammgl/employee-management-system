@@ -22,20 +22,12 @@ export class AuthService {
 	}
 
 	static async register(data) {
-		const { email, name, fatherName, password, role, employeeId } = data;
+		const { email, name, fatherName, password, role, employeeCode } = data;
 
 		// Check if email already exists
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
 			throw new AppError("Email already in use", 400);
-		}
-
-		// If role is employee, check if employeeId is unique
-		if (role === "employee" && employeeId) {
-			const existingEmployee = await User.findOne({ employeeId });
-			if (existingEmployee) {
-				throw new AppError("Employee ID already in use", 400);
-			}
 		}
 
 		const userData = {
@@ -44,7 +36,7 @@ export class AuthService {
 			fatherName,
 			password,
 			role,
-			...(role === "employee" && { employeeId }),
+			employeeCode: `A${Math.floor(Math.random() * 99999)}`,
 		};
 
 		const user = new User(userData);
@@ -58,9 +50,9 @@ export class AuthService {
 	}
 
 	static async login(data) {
-		const { email, password } = data;
+		const { email, password, employeeCode } = data;
 
-		const user = await User.findOne({ email }).select(
+		const user = await User.findOne({ email, employeeCode }).select(
 			"+password +refreshToken"
 		);
 

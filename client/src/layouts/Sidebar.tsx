@@ -12,8 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/store/authStore";
-import { useNotificationStore } from "@/store/notificationStore";
+import { useAuthStore } from "@/store/auth";
+import { useNotificationStore } from "@/store/notification";
 import {
   Sidebar as Bar,
   SidebarContent,

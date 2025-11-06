@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Building2 } from "lucide-react";
 import type { Role } from "@/types";

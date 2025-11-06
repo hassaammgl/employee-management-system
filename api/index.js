@@ -45,7 +45,7 @@ process.on("SIGINT", () => gracefulShutdown(0));
 
 		await connectDB();
 
-		const PORT = ENVS.PORT ?? 5500;
+		const PORT = ENVS.PORT ?? 5000;
 		server = app.listen(PORT, () => {
 			logger.info(`Server running on http://localhost:${PORT}`);
 		});

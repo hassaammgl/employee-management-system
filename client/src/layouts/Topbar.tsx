@@ -2,8 +2,8 @@ import { Search, Moon, Sun, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuthStore } from "@/store/authStore";
-import { useThemeStore } from "@/store/themeStore";
+import { useAuthStore } from "@/store/auth";
+import { useThemeStore } from "@/store/theme";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function Topbar() {

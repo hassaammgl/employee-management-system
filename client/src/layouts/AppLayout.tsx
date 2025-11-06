@@ -32,7 +32,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Topbar } from "./Topbar";
 import { Sidebar } from "./Sidebar";
 import { Outlet, Navigate } from "react-router";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth";
 
 const AppLayout = () => {
   const { isAuthenticated } = useAuthStore();

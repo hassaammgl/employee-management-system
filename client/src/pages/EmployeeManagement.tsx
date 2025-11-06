@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useDepartmentStore } from "@/store/departmentStore";
+import { useEmployeeStore } from "@/store/employee";
+import { useDepartmentStore } from "@/store/department";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Employee, EmployeeStatus } from "@/types";

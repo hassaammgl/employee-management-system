@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 // import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { useAuthStore } from "@/store/authStore";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useTaskStore } from "@/store/taskStore";
+import { useAuthStore } from "@/store/auth";
+import { useEmployeeStore } from "@/store/employee";
+import { useTaskStore } from "@/store/task";
 import { Calendar, DollarSign, Briefcase, Bell, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

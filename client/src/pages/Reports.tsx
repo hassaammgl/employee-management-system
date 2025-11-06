@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useDepartmentStore } from "@/store/departmentStore";
+import { useEmployeeStore } from "@/store/employee";
+import { useDepartmentStore } from "@/store/department";
 import { TrendingUp, Users, DollarSign, Award } from "lucide-react";
 import {
   BarChart,

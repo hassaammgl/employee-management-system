@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Shield } from "lucide-react";
 

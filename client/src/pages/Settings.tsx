@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useThemeStore } from "@/store/themeStore";
+import { useThemeStore } from "@/store/theme";
 import { Moon, Sun, Bell, Globe, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -29,8 +29,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useDepartmentStore } from "@/store/departmentStore";
+import { useEmployeeStore } from "@/store/employee";
+import { useDepartmentStore } from "@/store/department";
 import { useState } from "react";
 
 export default function Settings() {

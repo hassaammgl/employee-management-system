@@ -25,9 +25,9 @@ import {
   Cell,
 } from "recharts";
 import { useNavigate } from "react-router";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useDepartmentStore } from "@/store/departmentStore";
-import { useActivityStore } from "@/store/activityStore";
+import { useEmployeeStore } from "@/store/employee";
+import { useDepartmentStore } from "@/store/department";
+import { useActivityStore } from "@/store/activity";
 
 
 export default function AdminDashboard() {

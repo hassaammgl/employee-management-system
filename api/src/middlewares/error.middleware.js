@@ -11,6 +11,13 @@ export const errorHandler = (err, req, res, next) => {
         return next(err);
     }
 
+    // Set CORS headers for error responses
+    const origin = req.headers.origin;
+    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1') || origin === ENVS.CLIENT_ORIGIN)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Access-Control-Allow-Credentials", "true");
+    }
+
     if (err instanceof AppError) {
         statusCode = err.statusCode;
         message = err.message;

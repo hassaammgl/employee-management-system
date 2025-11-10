@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 import type { User } from "@/types";
+import { getErrorMessage } from "@/utils/zustandError";
 
 interface AuthState {
   user: User | null;
@@ -33,14 +34,6 @@ const api = axios.create({
   baseURL: API_BASE ? `${API_BASE}/api` : "/api",
   withCredentials: true,
 });
-
-const getErrorMessage = (err: any): string => {
-  return (
-    err?.response?.data?.message ||
-    err?.message ||
-    "Something went wrong. Please try again."
-  );
-};
 
 export const useAuthStore = create<AuthState>()(
   persist(

@@ -36,8 +36,6 @@ export default function Login() {
         employeeCode,
       });
       success("You're in! 🎉");
-      console.log("role:", role);
-      
       if (role === "admin") {
         navigate("/admin/dashboard");
       } else {

@@ -21,14 +21,17 @@ import { useEmployeeStore } from "@/store/employee";
 import { Plus } from "lucide-react";
 import type { EmployeeStatus } from "@/types";
 import { Calendar } from "@/components/ui/calendar";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/toast";
+import type { AxiosError } from "axios";
+
+const departments = ["HR", "Finance", "IT", "Marketing", "Operations"];
 
 const AddEmployee = () => {
   const { addEmployee } = useEmployeeStore();
+  const { error, success } = useToast();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
-
-  const departments = ["HR", "Finance", "IT", "Marketing", "Operations"];
 
   const [data, setData] = useState({
     name: "",
@@ -40,20 +43,6 @@ const AddEmployee = () => {
     salary: 0,
     status: "active" as EmployeeStatus,
   });
-
-  const resetForm = () => {
-    setData({
-      name: "",
-      fatherName: "",
-      email: "",
-      password: "",
-      role: "",
-      department: "",
-      salary: 0,
-      status: "active",
-    });
-    setDate(undefined);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,40 +57,27 @@ const AddEmployee = () => {
       status,
     } = data;
 
-    if (!name || !fatherName || !email || !password || !role || !department) {
-      toast.error("Please fill in all required fields!");
-      return;
-    }
-
-    if (!date) {
-      toast.error("Please select a join date!");
-      return;
-    }
-
-    if (salary <= 0) {
-      toast.error("Salary must be greater than zero!");
-      return;
-    }
-
     try {
-      await addEmployee({
-        department,
-        email,
-        fatherName,
+     await addEmployee({
         name,
+        fatherName,
+        email,
         password,
         role,
         salary,
-        joinDate: date.toISOString(),
+        department,
         status,
+        joinDate: date?.toISOString(),
       });
-
-      toast.success(`${name} has been added successfully!`);
-      resetForm();
+    
+      success("Employee added successfully! 🎉");
       setIsDialogOpen(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to add employee. Try again!");
+    } catch (err) {
+      const message =
+        (err as AxiosError<{ message?: string }>)?.response?.data?.message ??
+        (err as Error)?.message ??
+        "Failed to add employee 😵";
+      error(message);
     }
   };
 
@@ -270,7 +246,6 @@ const AddEmployee = () => {
               type="button"
               variant="outline"
               onClick={() => {
-                resetForm();
                 setIsDialogOpen(false);
               }}
             >

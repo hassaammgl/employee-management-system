@@ -25,7 +25,7 @@ import {
 export default function Profile() {
   const { user, updateProfile } = useAuthStore();
   const { error, success } = useToast();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState({
     name: user?.name || "",
     fatherName: user?.fatherName || "",
@@ -124,7 +124,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpen} defaultOpen={false} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button>Save Changes</Button>
               </DialogTrigger>

@@ -27,9 +27,13 @@ export default function EmployeeManagement() {
 
   useEffect(() => {
     (async () => {
-      await fetchEmployees();
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      try {
+        await fetchEmployees();
+        console.log(useEmployeeStore.getState().employees);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    })(); 
   }, []);
 
   const [searchQuery, setSearchQuery] = useState("");

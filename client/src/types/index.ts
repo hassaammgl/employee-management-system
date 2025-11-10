@@ -9,6 +9,7 @@ export interface User {
   role: Role;
   password: string;
   employeeCode?: string;
+  fatherName: string;
 }
 
 export interface Employee {

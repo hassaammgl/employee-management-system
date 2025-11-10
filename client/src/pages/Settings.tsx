@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { useThemeStore } from "@/store/theme";
 import { Moon, Sun, Bell, Globe, Trash2, AlertTriangle } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,19 +44,11 @@ export default function Settings() {
   const handleResetData = () => {
     resetEmployees();
     resetDepartments();
-    toast({
-      title: "Data reset successful",
-      description: "All data has been reset to default values",
-    });
   };
 
   const handleThemeChange = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    toast({
-      title: "Theme changed",
-      description: `Switched to ${newTheme} mode`,
-    });
   };
 
   const handleNotificationToggle = (type: "email" | "push", value: boolean) => {
@@ -66,11 +57,6 @@ export default function Settings() {
     } else {
       setPushNotifications(value);
     }
-    toast({
-      title: `${type === "email" ? "Email" : "Push"} notifications ${
-        value ? "enabled" : "disabled"
-      }`,
-    });
   };
 
   return (

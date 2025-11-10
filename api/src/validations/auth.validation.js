@@ -48,3 +48,22 @@ export const loginSchema = Joi.object({
 		"string.uppercase": "Employee Code is uppercase only",
 	}),
 });
+
+
+export const updateUserSchema = Joi.object({
+	name: Joi.string().trim().min(2).max(50).required().messages({
+		"string.empty": "Name is required",
+		"string.min": "Name must be at least 2 characters long",
+		"string.max": "Name cannot exceed 50 characters",
+		"any.required": "Name is required",
+	}),
+	fatherName: Joi.string().trim().min(2).max(50).required().messages({
+		"string.empty": "Father's name is required",
+		"string.min": "Father's name must be at least 2 characters long",
+		"string.max": "Father's name cannot exceed 50 characters",
+		"any.required": "Father's name is required",
+	}),
+	password: Joi.string().required().messages({
+		"any.required": "Password is required",
+	}),
+});

@@ -2,7 +2,6 @@
 import { create } from "zustand";
 import axios from "axios";
 import type { Department } from "@/types";
-import { toast } from "@/hooks/use-toast";
 
 interface DepartmentState {
   departments: Department[];
@@ -10,7 +9,10 @@ interface DepartmentState {
   error: string | null;
   fetchDepartments: () => Promise<void>;
   addDepartment: (department: Omit<Department, "id">) => Promise<boolean>;
-  updateDepartment: (id: string, updates: Partial<Department>) => Promise<boolean>;
+  updateDepartment: (
+    id: string,
+    updates: Partial<Department>
+  ) => Promise<boolean>;
   deleteDepartment: (id: string) => Promise<boolean>;
   resetDepartments: () => void;
 }
@@ -44,13 +46,9 @@ export const useDepartmentStore = create<DepartmentState>((set) => ({
       const departments = (data?.data || []).map(transformDepartment);
       set({ departments, isLoading: false, error: null });
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || "Failed to fetch departments";
+      const errorMessage =
+        error?.response?.data?.message || "Failed to fetch departments";
       set({ isLoading: false, error: errorMessage });
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
     }
   },
 
@@ -66,26 +64,18 @@ export const useDepartmentStore = create<DepartmentState>((set) => ({
 
       const { data } = await api.post("/departments", payload);
       const newDepartment = transformDepartment(data?.data);
-      
+
       set((state) => ({
         departments: [...state.departments, newDepartment],
         isLoading: false,
         error: null,
       }));
 
-      toast({
-        title: "Success",
-        description: "Department added successfully",
-      });
       return true;
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || "Failed to add department";
+      const errorMessage =
+        error?.response?.data?.message || "Failed to add department";
       set({ isLoading: false, error: errorMessage });
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
       return false;
     }
   },
@@ -96,8 +86,10 @@ export const useDepartmentStore = create<DepartmentState>((set) => ({
       const payload: any = {};
       if (updates.name !== undefined) payload.name = updates.name;
       if (updates.head !== undefined) payload.head = updates.head;
-      if (updates.description !== undefined) payload.description = updates.description;
-      if (updates.employeeCount !== undefined) payload.employeeCount = updates.employeeCount;
+      if (updates.description !== undefined)
+        payload.description = updates.description;
+      if (updates.employeeCount !== undefined)
+        payload.employeeCount = updates.employeeCount;
 
       const { data } = await api.put(`/departments/${id}`, payload);
       const updatedDepartment = transformDepartment(data?.data);
@@ -110,19 +102,11 @@ export const useDepartmentStore = create<DepartmentState>((set) => ({
         error: null,
       }));
 
-      toast({
-        title: "Success",
-        description: "Department updated successfully",
-      });
       return true;
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || "Failed to update department";
+      const errorMessage =
+        error?.response?.data?.message || "Failed to update department";
       set({ isLoading: false, error: errorMessage });
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
       return false;
     }
   },
@@ -138,19 +122,11 @@ export const useDepartmentStore = create<DepartmentState>((set) => ({
         error: null,
       }));
 
-      toast({
-        title: "Success",
-        description: "Department deleted successfully",
-      });
       return true;
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || "Failed to delete department";
+      const errorMessage =
+        error?.response?.data?.message || "Failed to delete department";
       set({ isLoading: false, error: errorMessage });
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
       return false;
     }
   },

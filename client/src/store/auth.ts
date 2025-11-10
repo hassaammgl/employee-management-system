@@ -18,10 +18,15 @@ interface AuthState {
     email: string;
     password: string;
     employeeCode: string;
-  }) => Promise<void>;
+  }) => Promise<{ role: string }>;
   me: () => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => void;
+  updateProfile: (updates: {
+    name: string;
+    fatherName: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
 }
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || "";
@@ -55,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
             name,
             password,
           });
-          set({ user: data.user, isAuthenticated: true });
+          set({ user: data.data, isAuthenticated: true });
         } catch (err: any) {
           const errorMessage = getErrorMessage(err);
           set({ error: errorMessage });
@@ -64,60 +69,29 @@ export const useAuthStore = create<AuthState>()(
       },
       login: async ({ email, password, employeeCode }) => {
         try {
+          set({ error: null });
           const { data } = await api.post("/login", {
             email,
             password,
             employeeCode,
           });
-          const apiUser = data?.data as any;
-          const user = apiUser
-            ? ({
-                id: apiUser._id ?? apiUser.id,
-                name: apiUser.name,
-                email: apiUser.email,
-                role: apiUser.role,
-                employeeCode: apiUser.employeeCode ?? undefined,
-                password: "",
-              } as User)
-            : null;
-          set({ user, isAuthenticated: !!user });
-          return true;
-        } catch {
-          return false;
+          set({ user: data.data, isAuthenticated: true });
+          return { role: data.data?.role };
+        } catch (err: any) {
+          const errorMessage = getErrorMessage(err);
+          set({ error: errorMessage });
+          throw new Error(errorMessage);
         }
       },
       me: async () => {
         try {
           const { data } = await api.get("/me");
-          const apiUser = data?.data as any;
-          const user = apiUser
-            ? ({
-                id: apiUser._id ?? apiUser.id,
-                name: apiUser.name,
-                email: apiUser.email,
-                role: apiUser.role,
-                employeeCode: apiUser.employeeCode ?? undefined,
-                password: "",
-              } as User)
-            : null;
-          set({ user, isAuthenticated: !!user });
+          set({ user: data.data, isAuthenticated: true });
         } catch {
-          // try refresh once
           try {
             await api.post("/refresh");
             const { data } = await api.get("/me");
-            const apiUser = data?.data as any;
-            const user = apiUser
-              ? ({
-                  id: apiUser._id ?? apiUser.id,
-                  name: apiUser.name,
-                  email: apiUser.email,
-                  role: apiUser.role,
-                  employeeCode: apiUser.employeeCode ?? undefined,
-                  password: "",
-                } as User)
-              : null;
-            set({ user, isAuthenticated: !!user });
+            set({ user: data.data, isAuthenticated: true });
           } catch {
             set({ user: null, isAuthenticated: false });
           }
@@ -130,10 +104,16 @@ export const useAuthStore = create<AuthState>()(
           set({ user: null, isAuthenticated: false });
         }
       },
-      updateProfile: (updates) => {
-        set((state) => ({
-          user: state.user ? { ...state.user, ...updates } : null,
-        }));
+      updateProfile: async (updates) => {
+        try {
+          set({ error: null });
+          const { data } = await api.post("/update-profile", { ...updates });
+          set({ user: data.data, isAuthenticated: true });
+        } catch (err: any) {
+          const errorMessage = getErrorMessage(err);
+          set({ error: errorMessage });
+          throw new Error(errorMessage);
+        }
       },
     }),
     {

@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import { TokenService } from "../utils/Jwt.js";
 import { AppError } from "../utils/AppError.js";
 import { dto } from "../utils/Dto.js";
+import { logger } from "../utils/logger.js";
 
 class AuthService {
 	async #generateAuthTokens(user) {
@@ -22,9 +23,8 @@ class AuthService {
 	}
 
 	async register(data) {
-		const { email, name, fatherName, password, role, employeeCode } = data;
+		const { email, name, fatherName, password } = data;
 
-		// Check if email already exists
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
 			throw new AppError("Email already in use", 400);
@@ -35,7 +35,7 @@ class AuthService {
 			name,
 			fatherName,
 			password,
-			role,
+			role: "admin",
 			employeeCode: `A${Math.floor(Math.random() * 99999)}`,
 		};
 
@@ -114,6 +114,15 @@ class AuthService {
 			...tokens,
 			user: dto.userDto(user),
 		};
+	}
+
+	async updateUser(data, user) {
+		const { name, fatherName, email } = data;
+		const isUserExist = await User.findOne({ employeeCode: user.employeeCode })
+		logger.debug(JSON.stringify(isUserExist))
+		if (!isUserExist) {
+
+		}
 	}
 }
 

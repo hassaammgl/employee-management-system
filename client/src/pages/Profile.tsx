@@ -10,30 +10,41 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { useAuthStore } from "@/store/auth";
-import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Shield } from "lucide-react";
+import { User, Mail, Shield, UserCircle2Icon, KeyRound } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
+import type { AxiosError } from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Profile() {
   const { user, updateProfile } = useAuthStore();
-  const { toast } = useToast();
+  const { error, success } = useToast();
 
-  const [formData, setFormData] = useState({
+  const [data, setData] = useState({
     name: user?.name || "",
+    fatherName: user?.fatherName || "",
     email: user?.email || "",
+    password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    updateProfile({
-      name: formData.name,
-      email: formData.email,
-    });
-
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-    });
+    try {
+      await updateProfile({ ...data });
+      success("Your profile updated 🎉");
+    } catch (err) {
+      const message =
+        (err as AxiosError<{ message?: string }>)?.response?.data?.message ??
+        (err as Error)?.message ??
+        "Failed to update profile 😵";
+      error(message);
+    }
   };
 
   return (
@@ -49,17 +60,15 @@ export default function Profile() {
           <CardDescription>Update your personal details here</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  value={data.name}
+                  onChange={(e) => setData({ ...data, name: e.target.value })}
                   className="pl-9"
                   required
                 />
@@ -73,9 +82,21 @@ export default function Profile() {
                 <Input
                   id="email"
                   type="email"
-                  value={formData.email}
+                  value={data.email}
+                  onChange={(e) => setData({ ...data, email: e.target.value })}
+                  className="pl-9"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Father Name</Label>
+              <div className="relative">
+                <UserCircle2Icon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={data.fatherName}
                   onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
+                    setData({ ...data, fatherName: e.target.value })
                   }
                   className="pl-9"
                   required
@@ -96,7 +117,37 @@ export default function Profile() {
               </div>
             </div>
 
-            <Button type="submit">Save Changes</Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Save Changes</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Enter your password.</DialogTitle>
+                  <DialogDescription>
+                    This action will change your account details
+                  </DialogDescription>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        value={data.password}
+                        onChange={(e) =>
+                          setData({ ...data, password: e.target.value })
+                        }
+                        className="pl-9"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-4 flex justify-end">
+                    <Button onClick={handleSubmit}>Submit</Button>
+                  </div>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </form>
         </CardContent>
       </Card>
@@ -113,7 +164,7 @@ export default function Profile() {
               {user?.role === "admin" ? "Administrator" : "Employee"}
             </span>
           </div>
-      
+
           {user?.employeeCode && (
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-muted-foreground">

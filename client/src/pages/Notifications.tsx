@@ -11,7 +11,6 @@ import {
   Info,
   AlertTriangle,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 
 export default function Notifications() {
   const { notifications, markAsRead, markAllAsRead, deleteNotification } =
@@ -34,26 +33,14 @@ export default function Notifications() {
 
   const handleMarkAsRead = (id: string) => {
     markAsRead(id);
-    toast({
-      title: "Marked as read",
-      description: "Notification has been marked as read",
-    });
   };
 
   const handleDelete = (id: string) => {
     deleteNotification(id);
-    toast({
-      title: "Notification deleted",
-      description: "Notification has been removed",
-    });
   };
 
   const handleMarkAllAsRead = () => {
     markAllAsRead();
-    toast({
-      title: "All marked as read",
-      description: `${unreadCount} notifications marked as read`,
-    });
   };
 
   return (

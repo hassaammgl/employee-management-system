@@ -11,9 +11,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthStore } from "@/store/auth";
-import { useToast } from "@/hooks/use-toast";
 import { Building2 } from "lucide-react";
 import { motion as m } from "motion/react";
+import type { AxiosError } from "axios";
+import { useToast } from "@/components/ui/toast";
 
 export default function Login() {
   const [data, setData] = useState({
@@ -23,36 +24,31 @@ export default function Login() {
   });
   const { login } = useAuthStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
-
+  const { error, success } = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { employeeCode, email, password } = data;
 
-    const ok = await login({
-      email,
-      password,
-      employeeCode,
-    });
-
-    if (ok) {
-      // Get the updated user from the store after login
-      const updatedUser = useAuthStore.getState().user;
-      toast({
-        title: "Login successful",
-        description: `Welcome back!`,
+    try {
+      const { role } = await login({
+        email,
+        password,
+        employeeCode,
       });
-      navigate(
-        updatedUser?.role === "admin"
-          ? "/admin/dashboard"
-          : "/employee/dashboard"
-      );
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
+      success("You're in! 🎉");
+      console.log("role:", role);
+      
+      if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/employee/dashboard");
+      }
+    } catch (err) {
+      const message =
+        (err as AxiosError<{ message?: string }>)?.response?.data?.message ??
+        (err as Error)?.message ??
+        "Login failed 😵";
+      error(message);
     }
   };
 

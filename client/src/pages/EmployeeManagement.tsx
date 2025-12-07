@@ -23,17 +23,17 @@ import {
 import type { Employee as EmployeeType } from "@/types";
 
 export default function EmployeeManagement() {
-  const { employees, isLoading, fetchEmployees } = useEmployeeStore();
+  const employees = useEmployeeStore((state) => state.employees);
+  const isLoading = useEmployeeStore((state) => state.isLoading);
+  const fetchEmployees = useEmployeeStore((state) => state.fetchEmployees);
 
   useEffect(() => {
-    (async () => {
-      try {
-        await fetchEmployees();
-        console.log(useEmployeeStore.getState().employees);
-      } catch (err) {
-        console.error("Error fetching employees:", err);
-      }
-    })(); 
+    try {
+      fetchEmployees();
+      console.log(useEmployeeStore.getState().employees);
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+    }
   }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -148,8 +148,8 @@ const EmployeeTable = ({
             status === "active"
               ? "default"
               : status === "on_leave"
-              ? "secondary"
-              : "destructive"
+                ? "secondary"
+                : "destructive"
           }
         >
           {status?.replace("_", " ").toUpperCase()}
@@ -157,23 +157,65 @@ const EmployeeTable = ({
       </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
-          <EditEmployee />
-          <DeleteEmployee />
+          <EditEmployee
+            employee={{
+              id,
+              name,
+              fatherName,
+              email,
+              role,
+              department,
+              salary,
+              status,
+            }}
+          />
+          <DeleteEmployee id={id!} />
         </div>
       </TableCell>
     </TableRow>
-  );
+  ); 
 };
 
-const DeleteEmployee = () => {
+const DeleteEmployee = ({ id }: { id: string }) => {
+  const { deleteEmployee } = useEmployeeStore();
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteEmployee(id);
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="hover:text-red-500">
           <Trash2 className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent>Place content for the popover here.</PopoverContent>
+      <PopoverContent className="w-64 p-4">
+        <div className="space-y-4">
+          <h4 className="font-medium leading-none text-red-500">Confirm Deletion</h4>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete this employee? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </PopoverContent>
     </Popover>
   );
 };

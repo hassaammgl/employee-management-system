@@ -68,7 +68,29 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
-  updateEmployee: async (id, updates) => {},
+  updateEmployee: async (id, updates) => {
+    try {
+      set({ isLoading: true, error: null });
+      await api.patch(`/${id}`, updates);
+      await get().fetchEmployees();
+      set({ isLoading: false });
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
+    }
+  },
 
-  deleteEmployee: async (id) => {},
+  deleteEmployee: async (id) => {
+    try {
+      set({ isLoading: true, error: null });
+      await api.delete(`/${id}`);
+      await get().fetchEmployees();
+      set({ isLoading: false });
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage, isLoading: false });
+      throw new Error(errorMessage);
+    }
+  },
 }));

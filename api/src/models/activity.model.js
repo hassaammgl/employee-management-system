@@ -11,6 +11,11 @@ const activitySchema = new mongoose.Schema(
       required: true
     },
     metadata: { type: Object },
+    type: {
+      type: String,
+      enum: ["employee", "department", "profile", "leave", "general"],
+      default: "general"
+    },
     occurredAt: {
       type: Date,
       default: Date.now

@@ -49,10 +49,9 @@ export const createEmployeeSchema = Joi.object({
 		.messages({
 			"any.only": "Status must be one of: active, on_leave, terminated",
 		}),
-	joinDate: Joi.date().iso().required().messages({
+	joinDate: Joi.date().iso().optional().messages({
 		"date.base": "Join date must be a valid date",
 		"date.format": "Join date must be in ISO format (YYYY-MM-DD)",
-		"any.required": "Join date is required",
 	}),
 	avatar: Joi.string().uri().allow("").optional().messages({
 		"string.uri": "Avatar must be a valid URL",

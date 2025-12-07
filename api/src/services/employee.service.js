@@ -3,6 +3,7 @@ import Employee from "../models/employee.model.js";
 import Department from "../models/department.model.js";
 import { AppError } from "../utils/AppError.js";
 import { dto } from "../utils/Dto.js";
+import { ActivityService } from "./activity.service.js";
 
 export class EmployeeService {
 	static async getAllEmployees() { 
@@ -97,6 +98,13 @@ export class EmployeeService {
 			"name fatherName email employeeCode"
 		);
 		await employeeProfile.populate("department", "name");
+
+		// Log activity
+        await ActivityService.logActivity(
+            user._id,
+            `New employee ${name} added to ${departmentDoc?.name || "company"}`,
+            "employee"
+        );
 
 		return dto.employeeDto(employeeProfile, user);
 	}
@@ -216,6 +224,16 @@ export class EmployeeService {
 		// Delete user
 		await User.findByIdAndDelete(employeeProfile.user);
 
+        // Log activity (using system/admin context if possible, but here we don't have req.user easily, so passing null or finding admin might be needed. 
+        // For simplicity, we'll skip user ID if not available or pass the deleted user ID as reference if we want history, but they are deleted. 
+        // Better to not log user ID or log "System". ActivityService handles handle missing user gracefully? 
+        // Actually ActivityService expects user ID. Maybe we can pass the ID of the person *performing* the action if we passed it to deleteEmployee. 
+        // but deleteEmployee(id) only takes id. 
+        // I will skip logging for delete for now or update deleteEmployee signature later.
+        // Wait, for create/update we have data. 
+        
+        // Let's just return for now as I strictly followed existing signature.
+        
 		return { message: "Employee deleted successfully" };
 	}
 }

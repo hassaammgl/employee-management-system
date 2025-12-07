@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,28 +23,31 @@ import { Calendar } from "@/components/ui/calendar";
 import { Pencil } from "lucide-react";
 import type { EmployeeStatus } from "@/types";
 
-const EditEmployee = () => {
-  const { fetchEmployees } = useEmployeeStore();
+const EditEmployee = ({ employee }: { employee: any }) => {
+  const { updateEmployee } = useEmployeeStore();
   const { departments } = useDepartmentStore();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, setDate] = useState<Date | undefined>(
+    employee?.joinDate ? new Date(employee.joinDate) : undefined
+  );
   const [data, setData] = useState({
-    name: "",
-    fatherName: "",
-    email: "",
-    role: "",
-    department: "",
-    salary: 0,
-    status: "active" as EmployeeStatus,
+    name: employee?.name || "",
+    fatherName: employee?.fatherName || "",
+    email: employee?.email || "",
+    role: employee?.role || "",
+    department: employee?.department || "",
+    salary: employee?.salary || 0,
+    status: (employee?.status || "active") as EmployeeStatus,
   });
-
-  useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await updateEmployee(employee.id, {
+      ...data,
+      joinDate: date?.toISOString()
+    });
+    setIsDialogOpen(false);
   };
 
   return (

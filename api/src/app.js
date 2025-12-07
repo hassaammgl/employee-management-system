@@ -7,6 +7,9 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import employeeRoutes from "./routes/employee.routes.js";
 import departmentRoutes from "./routes/department.routes.js";
+import taskRoutes from "./routes/task.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import activityRoutes from "./routes/activity.routes.js";
 
 const app = express();
 
@@ -30,7 +33,7 @@ app.use(
 		},
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-		allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+		allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Cache-Control"],
 		exposedHeaders: ["Set-Cookie"],
 		optionsSuccessStatus: 200,
 	})
@@ -56,7 +59,17 @@ app.use("/api", authRoutes);
 app.use("/api/employees", employeeRoutes);
 
 // department routes
+// department routes
 app.use("/api/departments", departmentRoutes);
+
+// task routes
+app.use("/api/tasks", taskRoutes);
+
+// notification routes
+app.use("/api/notifications", notificationRoutes);
+
+// activity routes
+app.use("/api/activities", activityRoutes);
 
 // error handlers
 app.use(errorHandler);

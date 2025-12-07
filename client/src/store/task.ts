@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
+import axios from "axios";
+import { getErrorMessage } from "@/utils/zustandError";
 
 export interface Task {
   id: string;
@@ -7,72 +10,82 @@ export interface Task {
   completed: boolean;
   dueDate: string;
   priority: "low" | "medium" | "high";
+  assignedTo?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
 }
 
 interface TaskStore {
   tasks: Task[];
-  toggleTask: (id: string) => void;
-  addTask: (task: Omit<Task, "id">) => void;
-  deleteTask: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  fetchTasks: () => Promise<void>;
+  toggleTask: (id: string, completed: boolean) => Promise<void>;
+  addTask: (task: Omit<Task, "id">) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
 }
 
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Complete Q1 Report",
-    description: "Finish the quarterly performance report",
-    completed: false,
-    dueDate: new Date(Date.now() + 86400000 * 2).toISOString(),
-    priority: "high",
-  },
-  {
-    id: "2",
-    title: "Review Team PRs",
-    description: "Review pending pull requests from team members",
-    completed: true,
-    dueDate: new Date(Date.now() + 86400000).toISOString(),
-    priority: "medium",
-  },
-  {
-    id: "3",
-    title: "Update Documentation",
-    description: "Update API documentation with new endpoints",
-    completed: false,
-    dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-    priority: "medium",
-  },
-  {
-    id: "4",
-    title: "Prepare Presentation",
-    description: "Create slides for Monday's client meeting",
-    completed: false,
-    dueDate: new Date(Date.now() + 86400000 * 4).toISOString(),
-    priority: "high",
-  },
-  {
-    id: "5",
-    title: "Code Review Session",
-    description: "Participate in weekly code review",
-    completed: true,
-    dueDate: new Date(Date.now()).toISOString(),
-    priority: "low",
-  },
-];
+const API_BASE = (import.meta as any).env?.VITE_API_URL || "";
+const api = axios.create({
+  baseURL: API_BASE ? `${API_BASE}/api/tasks` : "/api/tasks",
+  withCredentials: true,
+});
 
-export const useTaskStore = create<TaskStore>((set) => ({
-  tasks: mockTasks,
-  toggleTask: (id) =>
-    set((state) => ({
-      tasks: state.tasks.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      ),
-    })),
-  addTask: (task) =>
-    set((state) => ({
-      tasks: [...state.tasks, { ...task, id: Date.now().toString() }],
-    })),
-  deleteTask: (id) =>
-    set((state) => ({
-      tasks: state.tasks.filter((t) => t.id !== id),
-    })),
+export const useTaskStore = create<TaskStore>((set, get) => ({
+  tasks: [],
+  isLoading: false,
+  error: null,
+
+  fetchTasks: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get("/");
+      set({ isLoading: false, tasks: data.data });
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  toggleTask: async (id, completed) => {
+    try {
+      // Optimistic update
+      set((state) => ({
+        tasks: state.tasks.map((t) =>
+          t.id === id ? { ...t, completed } : t
+        ),
+      }));
+      await api.patch(`/${id}`, { completed });
+    } catch (err: any) {
+      // Revert on failure could be added here
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage });
+    }
+  },
+
+  addTask: async (task) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post("/", task);
+      await get().fetchTasks();
+      set({ isLoading: false });
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  deleteTask: async (id) => {
+    try {
+      set((state) => ({
+        tasks: state.tasks.filter((t) => t.id !== id),
+      }));
+      await api.delete(`/${id}`);
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage });
+    }
+  },
 }));

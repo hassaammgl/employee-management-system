@@ -2,8 +2,8 @@ import Task from "../models/task.model.js";
 import { AppError } from "../utils/AppError.js";
 
 export class TaskService {
-	static async getAllTasks() {
-		const tasks = await Task.find().populate("assignedTo", "name email").sort({ createdAt: -1 });
+	static async getAllTasks(filter = {}) {
+		const tasks = await Task.find(filter).populate("assignedTo", "name email").sort({ createdAt: -1 });
 		return tasks.map(task => this.formatTask(task));
 	}
 

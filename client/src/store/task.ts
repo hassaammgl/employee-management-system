@@ -24,6 +24,7 @@ interface TaskStore {
   fetchTasks: () => Promise<void>;
   toggleTask: (id: string, completed: boolean) => Promise<void>;
   addTask: (task: Omit<Task, "id">) => Promise<void>;
+  updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
 }
 
@@ -69,6 +70,18 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.post("/", task);
+      await get().fetchTasks();
+      set({ isLoading: false });
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err);
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  updateTask: async (id, updates) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.patch(`/${id}`, updates);
       await get().fetchTasks();
       set({ isLoading: false });
     } catch (err: any) {

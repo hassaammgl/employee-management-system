@@ -10,6 +10,7 @@ const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const AdminTasksPage = lazy(() => import("@/pages/AdminTasks"));
 const EmployeeManagement = lazy(() => import("@/pages/EmployeeManagement"));
 const DepartmentPage = lazy(() => import("@/pages/Departments"));
 const ReportsPage = lazy(() => import("@/pages/Reports"));
@@ -19,6 +20,7 @@ const ProfilePage = lazy(() => import("@/pages/Profile"));
 
 // Employee Pages
 const EmployeeDashboard = lazy(() => import("@/pages/EmployeeDashboard"));
+const EmployeeTasksPage = lazy(() => import("@/pages/EmployeeTasks"));
 const EmployeeNotificationsPage = lazy(() => import("@/pages/Notifications"));
 const EmployeeSettingsPage = lazy(() => import("@/pages/Settings"));
 const EmployeeProfilePage = lazy(() => import("@/pages/Profile"));
@@ -53,6 +55,14 @@ const routes = [
         element: (
           <MySuspense>
             <AdminDashboard />
+          </MySuspense>
+        ),
+      },
+      {
+        path: "/admin/tasks",
+        element: (
+          <MySuspense>
+            <AdminTasksPage />
           </MySuspense>
         ),
       },
@@ -111,6 +121,14 @@ const routes = [
         element: (
           <MySuspense>
             <EmployeeDashboard />
+          </MySuspense>
+        ),
+      },
+      {
+        path: "/employee/tasks",
+        element: (
+          <MySuspense>
+            <EmployeeTasksPage />
           </MySuspense>
         ),
       },

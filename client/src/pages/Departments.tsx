@@ -7,79 +7,38 @@ import type { Department as DepartmentType } from "@/types";
 import { Spinner } from "@/components/ui/Loader/spinner";
 import AddDepartments from "@/components/forms/admin/AddDepartments";
 import EditDepartment from "@/components/forms/admin/EditDepartment";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Departments() {
-  const {
-    departments,
-    isLoading,
-    fetchDepartments,
-    // addDepartment,
-    // updateDepartment,
-    // deleteDepartment,
-  } = useDepartmentStore();
+  const { departments, isLoading, error, fetchDepartments, deleteDepartment } =
+    useDepartmentStore();
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchDepartments();
   }, [fetchDepartments]);
 
-  // const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // const [editingDept, setEditingDept] = useState<Department | null>(null);
-
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   head: "",
-  //   employeeCount: "",
-  //   description: "",
-  // });
-
-  // const handleOpenDialog = (department?: Department) => {
-  //   if (department) {
-  //     setEditingDept(department);
-  //     setFormData({
-  //       name: department.name,
-  //       head: department.head,
-  //       employeeCount: department.employeeCount.toString(),
-  //       description: department.description,
-  //     });
-  //   } else {
-  //     setEditingDept(null);
-  //     setFormData({
-  //       name: "",
-  //       head: "",
-  //       employeeCount: "0",
-  //       description: "",
-  //     });
-  //   }
-  //   setIsDialogOpen(true);
-  // };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   // const deptData = {
-  //   //   name: formData.name,
-  //   //   head: formData.head,
-  //   //   employeeCount: parseInt(formData.employeeCount),
-  //   //   description: formData.description,
-  //   // };
-
-  //   // let success = false;
-  //   // if (editingDept) {
-  //   //   success = await updateDepartment(editingDept.id, deptData);
-  //   // } else {
-  //   //   success = await addDepartment(deptData);
-  //   // }
-
-  //   // if (success) {
-  //   //   setIsDialogOpen(false);
-  //   // }
-  // };
-
-  // const handleDelete = async (department: Department) => {
-  //   if (window.confirm(`Are you sure you want to delete ${department.name}?`)) {
-  //     await deleteDepartment(department.id);
-  //   }
-  // };
+  const handleDelete = async (department: DepartmentType) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${department.name}? This action cannot be undone.`
+      )
+    ) {
+      const success = await deleteDepartment(department.id);
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Department deleted successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to delete department",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -94,6 +53,12 @@ export default function Departments() {
         <AddDepartments />
       </div>
 
+      {error && (
+        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-destructive">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           <div className="col-span-full flex justify-center items-center py-12">
@@ -107,11 +72,8 @@ export default function Departments() {
           departments.map((department) => (
             <DepartmentCards
               key={department.id}
-              id={department.id}
-              name={department.name}
-              head={department.head}
-              description={department.description}
-              employeeCount={department.employeeCount}
+              department={department}
+              onDelete={handleDelete}
             />
           ))
         )}
@@ -121,23 +83,26 @@ export default function Departments() {
 }
 
 const DepartmentCards = ({
-  id,
-  name,
-  head,
-  description,
-  employeeCount,
-}: DepartmentType) => {
+  department,
+  onDelete,
+}: {
+  department: DepartmentType;
+  onDelete: (dept: DepartmentType) => void;
+}) => {
+  const { isLoading } = useDepartmentStore();
+
   return (
-    <Card className="hover:shadow-lg transition-shadow" key={id}>
+    <Card className="hover:shadow-lg transition-shadow" key={department.id}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-bold">{name}</CardTitle>
+        <CardTitle className="text-xl font-bold">{department.name}</CardTitle>
         <div className="flex gap-1">
-          <EditDepartment />
+          <EditDepartment department={department} />
           <Button
             variant="ghost"
             size="icon"
-            // onClick={() => handleDelete(department)}
-            // disabled={isLoading}
+            onClick={() => onDelete(department)}
+            disabled={isLoading}
+            title="Delete department"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -146,19 +111,20 @@ const DepartmentCards = ({
       <CardContent className="space-y-3">
         <div>
           <p className="text-sm text-muted-foreground">Department Head</p>
-          <p className="font-medium">{head || "Not assigned"}</p>
+          <p className="font-medium">{department.head || "Not assigned"}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm">
-            {employeeCount} {employeeCount === 1 ? "Employee" : "Employees"}
+            {department.employeeCount}{" "}
+            {department.employeeCount === 1 ? "Employee" : "Employees"}
           </span>
         </div>
 
         <div>
           <p className="text-sm text-muted-foreground">
-            {description || "No description"}
+            {department.description || "No description"}
           </p>
         </div>
       </CardContent>

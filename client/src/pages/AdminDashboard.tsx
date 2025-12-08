@@ -25,16 +25,23 @@ import {
   Cell,
 } from "recharts";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import { useEmployeeStore } from "@/store/employee";
 import { useDepartmentStore } from "@/store/department";
 import { useActivityStore } from "@/store/activity";
 
 
 export default function AdminDashboard() {
-  const { employees } = useEmployeeStore();
-  const { departments } = useDepartmentStore();
-  const { activities } = useActivityStore();
+  const { employees, fetchEmployees } = useEmployeeStore();
+  const { departments, fetchDepartments } = useDepartmentStore();
+  const { activities, fetchActivities } = useActivityStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchEmployees();
+    fetchDepartments();
+    fetchActivities();
+  }, [fetchEmployees, fetchDepartments, fetchActivities]);
 
   const totalEmployees = employees.length;
   const activeEmployees = employees.filter((e) => e.status === "active").length;
@@ -79,7 +86,7 @@ export default function AdminDashboard() {
       icon: CheckCircle,
       label: "Approve Leave",
       description: "Review pending leave requests",
-      action: () => {},
+      action: () => { },
     },
     {
       icon: Activity,

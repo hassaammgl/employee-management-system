@@ -3,7 +3,8 @@ import { TaskService } from "../services/task.service.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const getAllTasks = asyncHandler(async (req, res) => {
-	const tasks = await TaskService.getAllTasks();
+    const filter = req.user.role === "admin" ? {} : { assignedTo: req.user._id };
+	const tasks = await TaskService.getAllTasks(filter);
 	return ApiResponse.success(res, {
 		message: "Tasks fetched successfully",
 		data: tasks,

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNotificationStore } from "@/store/notification";
+import { useEffect } from "react";
 import {
   Bell,
   CheckCheck,
@@ -13,8 +14,12 @@ import {
 } from "lucide-react";
 
 export default function Notifications() {
-  const { notifications, markAsRead, markAllAsRead, deleteNotification } =
+  const { notifications, fetchNotifications, markAsRead, markAllAsRead, deleteNotification } =
     useNotificationStore();
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -82,11 +87,10 @@ export default function Notifications() {
               {notifications.map((notification, index) => (
                 <div
                   key={notification.id}
-                  className={`rounded-lg border p-4 transition-all ${
-                    notification.read
-                      ? "bg-background"
-                      : "bg-primary/5 border-primary/20"
-                  }`}
+                  className={`rounded-lg border p-4 transition-all ${notification.read
+                    ? "bg-background"
+                    : "bg-primary/5 border-primary/20"
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-1">{getIcon(notification.type)}</div>

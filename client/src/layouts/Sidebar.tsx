@@ -141,6 +141,7 @@ import {
   LogOut,
   ClipboardList,
   MessageSquare,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -171,6 +172,7 @@ export function Sidebar() {
     { to: "/admin/employees", icon: Users, label: "Employees" },
     { to: "/admin/departments", icon: Building2, label: "Departments" },
     { to: "/admin/chat", icon: MessageSquare, label: "Chat" },
+    { to: "/admin/mail", icon: Mail, label: "Mail" },
     { to: "/admin/announcements", icon: Bell, label: "Announcements" },
     { to: "/admin/reports", icon: FileText, label: "Reports" },
     {
@@ -187,6 +189,7 @@ export function Sidebar() {
     { to: "/employee/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/employee/tasks", icon: ClipboardList, label: "My Tasks" },
     { to: "/employee/chat", icon: MessageSquare, label: "Chat" },
+    { to: "/employee/mail", icon: Mail, label: "Mail" },
     {
       to: "/employee/notifications",
       icon: Bell,
@@ -200,7 +203,7 @@ export function Sidebar() {
   const links = user?.role === "admin" ? adminLinks : employeeLinks;
 
   return (
-    <Bar collapsible="icon" variant="floating">
+    <Bar collapsible="icon" variant="inset">
       <SidebarHeader className="flex h-16 items-center justify-center border-b border-sidebar-border px-4">
         {open && (
           <h1 className="text-2xl font-bold text-sidebar-primary">EMS</h1>

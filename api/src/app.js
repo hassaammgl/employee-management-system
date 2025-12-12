@@ -79,8 +79,13 @@ app.use("/api/leaves", leaveRoutes);
 app.use("/api/announcements", announcementRoutes);
 
 // chat routes
+// chat routes
 import chatRoutes from "./routes/chat.routes.js";
 app.use("/api/chat", chatRoutes);
+
+// email routes
+import emailRoutes from "./routes/email.routes.js";
+app.use("/api/emails", emailRoutes);
 
 // error handlers
 app.use(errorHandler);

@@ -26,6 +26,7 @@ const EmployeeNotificationsPage = lazy(() => import("@/pages/Notifications"));
 const EmployeeSettingsPage = lazy(() => import("@/pages/Settings"));
 const EmployeeProfilePage = lazy(() => import("@/pages/Profile"));
 const ChatPage = lazy(() => import("@/pages/Chat"));
+const MailPage = lazy(() => import("@/pages/Mail"));
 
 const routes = [
   {
@@ -180,6 +181,23 @@ const routes = [
         element: (
           <MySuspense>
             <ChatPage />
+          </MySuspense>
+        ),
+      },
+      // Mail Routes
+      {
+        path: "/admin/mail",
+        element: (
+          <MySuspense>
+            <MailPage />
+          </MySuspense>
+        ),
+      },
+      {
+        path: "/employee/mail",
+        element: (
+          <MySuspense>
+            <MailPage />
           </MySuspense>
         ),
       },

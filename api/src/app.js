@@ -12,8 +12,10 @@ import notificationRoutes from "./routes/notification.routes.js";
 import activityRoutes from "./routes/activity.routes.js";
 import leaveRoutes from "./routes/leave.routes.js";
 import announcementRoutes from "./routes/announcement.routes.js";
+import { createServer } from "node:http";
 
 const app = express();
+export const httpServer = createServer(app);
 
 // CORS configuration - must be before other middleware
 const allowedOrigins = [
@@ -25,7 +27,6 @@ const allowedOrigins = [
 app.use(
 	cors({
 		origin: (origin, callback) => {
-			// Allow requests with no origin (like mobile apps, Postman, or same-origin)
 			if (!origin) return callback(null, true);
 			if (allowedOrigins.includes(origin)) {
 				callback(null, true);
@@ -46,21 +47,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
-// CORS middleware already handles OPTIONS preflight requests automatically
-
 app.get("/", (req, res) => {
 	res.status(200).json({
 		success: true,
 		message: "Hello World",
 	});
 });
+
 // auth routes
 app.use("/api", authRoutes);
 
 // employee routes
 app.use("/api/employees", employeeRoutes);
 
-// department routes
 // department routes
 app.use("/api/departments", departmentRoutes);
 
@@ -71,7 +70,6 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 // activity routes
-// activity routes
 app.use("/api/activities", activityRoutes);
 
 // leave routes
@@ -79,6 +77,10 @@ app.use("/api/leaves", leaveRoutes);
 
 // announcement routes
 app.use("/api/announcements", announcementRoutes);
+
+// chat routes
+import chatRoutes from "./routes/chat.routes.js";
+app.use("/api/chat", chatRoutes);
 
 // error handlers
 app.use(errorHandler);

@@ -3,13 +3,15 @@ export type Role = "admin" | "employee";
 export type EmployeeStatus = "active" | "on_leave" | "terminated";
 
 export interface User {
-  id: string;
+  _id: string; // Backend ID
+  id?: string; // Optional alias
   name: string;
   email: string;
   role: Role;
   password: string;
   employeeCode?: string;
   fatherName: string;
+  avatar?: string;
 }
 
 export interface Employee {

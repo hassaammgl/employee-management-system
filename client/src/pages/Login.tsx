@@ -27,7 +27,7 @@ export default function Login() {
   const { error, success } = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { employeeCode, email, password } = data;
+    const { email, password } = data;
 
     try {
       const { role } = await login({

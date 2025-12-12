@@ -2,6 +2,7 @@ import Task from "../models/task.model.js";
 import User from "../models/user.model.js";
 import { AppError } from "../utils/AppError.js";
 import { NotificationService } from "./notification.service.js";
+import { getIO } from "../config/socket.js";
 
 export class TaskService {
 	static async getAllTasks(filter = {}) {
@@ -22,6 +23,15 @@ export class TaskService {
                 message: `You have been assigned a new task: ${task.title}`,
                 type: "info"
             });
+            
+            // Emit task:new event
+            try {
+                const io = getIO();
+                const formattedTask = this.formatTask(task);
+                io.to(data.assignedTo.toString()).emit("task:new", formattedTask);
+            } catch (error) {
+                console.error("Socket emit failed:", error.message);
+            }
         }
 
 		return this.formatTask(task);
@@ -46,12 +56,34 @@ export class TaskService {
             );
         }
 
+        // Emit task:updated event to assignee
+        try {
+            const io = getIO();
+            const formattedTask = this.formatTask(task);
+            if (task.assignedTo) {
+                 io.to(task.assignedTo._id.toString()).emit("task:updated", formattedTask);
+            }
+        } catch (error) {
+             console.error("Socket emit failed:", error.message);
+        }
+
 		return this.formatTask(task);
 	}
 
 	static async deleteTask(id) {
 		const task = await Task.findByIdAndDelete(id);
 		if (!task) throw new AppError("Task not found", 404);
+        
+        // Emit task:deleted event to assignee
+        try {
+            const io = getIO();
+            if (task.assignedTo) {
+                io.to(task.assignedTo.toString()).emit("task:deleted", id);
+            }
+        } catch (error) {
+             console.error("Socket emit failed:", error.message);
+        }
+
 		return { message: "Task deleted successfully" };
 	}
 

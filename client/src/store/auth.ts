@@ -18,7 +18,6 @@ interface AuthState {
   login: (payload: {
     email: string;
     password: string;
-    employeeCode: string;
   }) => Promise<{ role: string }>;
   me: () => Promise<void>;
   logout: () => Promise<void>;
@@ -59,13 +58,12 @@ export const useAuthStore = create<AuthState>()(
           throw new Error(errorMessage);
         }
       },
-      login: async ({ email, password, employeeCode }) => {
+      login: async ({ email, password }) => {
         try {
           set({ error: null });
           const { data } = await api.post("/login", {
             email,
             password,
-            employeeCode,
           });
           set({ user: data.data, isAuthenticated: true });
           return { role: data.data?.role };

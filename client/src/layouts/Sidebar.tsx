@@ -140,6 +140,7 @@ import {
   UserCircle,
   LogOut,
   ClipboardList,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -169,6 +170,7 @@ export function Sidebar() {
     { to: "/admin/tasks", icon: ClipboardList, label: "Tasks" },
     { to: "/admin/employees", icon: Users, label: "Employees" },
     { to: "/admin/departments", icon: Building2, label: "Departments" },
+    { to: "/admin/chat", icon: MessageSquare, label: "Chat" },
     { to: "/admin/announcements", icon: Bell, label: "Announcements" },
     { to: "/admin/reports", icon: FileText, label: "Reports" },
     {
@@ -184,6 +186,7 @@ export function Sidebar() {
   const employeeLinks = [
     { to: "/employee/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/employee/tasks", icon: ClipboardList, label: "My Tasks" },
+    { to: "/employee/chat", icon: MessageSquare, label: "Chat" },
     {
       to: "/employee/notifications",
       icon: Bell,

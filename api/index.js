@@ -3,6 +3,8 @@ import { ENVS } from "./src/utils/constants.js";
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
 import { checkEnv } from "./src/utils/checkEnvs.js";
+import {httpServer} from "./src/app.js"
+import { initSocket } from "./src/config/socket.js";
 
 process.on("unhandledRejection", (reason) => {
 	logger.error(
@@ -46,8 +48,9 @@ process.on("SIGINT", () => gracefulShutdown(0));
 		await connectDB();
 
 		const PORT = ENVS.PORT ?? 5000;
-		server = app.listen(PORT, () => {
+		server = httpServer.listen(PORT, () => {
 			logger.info(`Server running on http://localhost:${PORT}`);
+			initSocket(server);
 		});
 
 		server.on("listening", () => {

@@ -12,14 +12,30 @@ import {
   Info,
   AlertTriangle,
 } from "lucide-react";
+import { useSocket } from "@/context/SocketContext";
+import { toast } from "sonner";
 
 export default function Notifications() {
   const { notifications, fetchNotifications, markAsRead, markAllAsRead, deleteNotification } =
     useNotificationStore();
+  const { socket } = useSocket();
 
   useEffect(() => {
     fetchNotifications();
-  }, [fetchNotifications]);
+
+    if (socket) {
+      socket.on("notification:new", (newNotification) => {
+        fetchNotifications(); // Refresh list or append locally
+        toast("New Notification", {
+          description: newNotification.title,
+        });
+      });
+
+      return () => {
+        socket.off("notification:new");
+      };
+    }
+  }, [fetchNotifications, socket]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -84,7 +100,7 @@ export default function Notifications() {
             </div>
           ) : (
             <div className="space-y-3">
-              {notifications.map((notification, index) => (
+              {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`rounded-lg border p-4 transition-all ${notification.read

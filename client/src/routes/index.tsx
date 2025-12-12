@@ -25,6 +25,7 @@ const EmployeeTasksPage = lazy(() => import("@/pages/EmployeeTasks"));
 const EmployeeNotificationsPage = lazy(() => import("@/pages/Notifications"));
 const EmployeeSettingsPage = lazy(() => import("@/pages/Settings"));
 const EmployeeProfilePage = lazy(() => import("@/pages/Profile"));
+const ChatPage = lazy(() => import("@/pages/Chat"));
 
 const routes = [
   {
@@ -162,6 +163,23 @@ const routes = [
         element: (
           <MySuspense>
             <EmployeeProfilePage />
+          </MySuspense>
+        ),
+      },
+      // Chat Route (Shared)
+      {
+        path: "/admin/chat",
+        element: (
+          <MySuspense>
+            <ChatPage />
+          </MySuspense>
+        ),
+      },
+      {
+        path: "/employee/chat",
+        element: (
+          <MySuspense>
+            <ChatPage />
           </MySuspense>
         ),
       },

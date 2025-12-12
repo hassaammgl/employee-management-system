@@ -1,5 +1,6 @@
 import Notification from "../models/notification.model.js";
 import { AppError } from "../utils/AppError.js";
+import { getIO } from "../config/socket.js";
 
 export class NotificationService {
 	static async getAllNotifications(userId) {
@@ -10,7 +11,17 @@ export class NotificationService {
     static async createNotification(data) {
         const notification = new Notification(data);
         await notification.save();
-        return this.formatNotification(notification);
+        const formattedNotification = this.formatNotification(notification);
+
+        // Emit real-time event
+        try {
+            const io = getIO();
+            io.to(data.user.toString()).emit("notification:new", formattedNotification);
+        } catch (error) {
+            console.error("Socket emit failed:", error.message);
+        }
+
+        return formattedNotification;
     }
 
 	static async markAsRead(id, userId) {

@@ -1,31 +1,59 @@
 import { useEffect, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useTaskStore } from "@/store/task";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Spinner } from "@/components/ui/Loader/spinner";
 import { Button } from "@/components/ui/button";
 import TaskForm from "@/components/forms/TaskForm";
-import type { Task } from "@/store/task";
+
+import { useSocket } from "@/context/SocketContext";
+import { toast } from "sonner";
 
 export default function EmployeeTasks() {
     const { tasks, isLoading, error, fetchTasks, toggleTask } = useTaskStore();
+    const { socket } = useSocket();
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+
 
     useEffect(() => {
         fetchTasks();
-    }, [fetchTasks]);
+
+        if (socket) {
+            socket.on("task:new", (newTask) => {
+                fetchTasks();
+                toast("New Task Assigned", {
+                    description: newTask.title,
+                });
+            });
+
+            socket.on("task:updated", (updatedTask) => {
+                fetchTasks();
+                toast("Task Updated", {
+                    description: updatedTask.title,
+                });
+            });
+
+            socket.on("task:deleted", () => {
+                fetchTasks();
+                toast("Task Deleted", {
+                    description: "A task has been removed",
+                });
+            });
+
+            return () => {
+                socket.off("task:new");
+                socket.off("task:updated");
+                socket.off("task:deleted");
+            };
+        }
+    }, [fetchTasks, socket]);
 
     const handleToggle = async (id: string, completed: boolean) => {
         await toggleTask(id, completed);
     };
 
-    const handleEdit = (task: Task) => {
-        setEditingTask(task);
-        setIsFormOpen(true);
-    };
+
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
@@ -109,7 +137,7 @@ export default function EmployeeTasks() {
             <TaskForm
                 isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
-                task={editingTask}
+                task={undefined}
             />
         </div>
     );

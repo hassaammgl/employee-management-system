@@ -234,7 +234,7 @@ export default function Chat() {
                             </div>
                         </div>
 
-                        <ScrollArea className="flex-1 p-4">
+                        <ScrollArea className="flex-1 p-4 scroll-auto">
                             <div className="space-y-4 flex flex-col">
                                 {messages.map((message) => {
                                     const isMe = (message.sender as any)._id === user?._id || message.sender === user?._id;

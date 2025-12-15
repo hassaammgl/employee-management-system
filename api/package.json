@@ -1,17 +1,25 @@
 {
   "name": "api",
-  "module": "index.ts",
+  "module": "index.js",
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "tsx index.ts",
-    "dev": "tsx watch index.ts"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.0.1",
-    "tsx": "^4.21.0",
-    "typescript": "^5"
-  },
-  "dependencies": {}
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.1",
+    "morgan": "^1.10.1",
+    "socket.io": "^4.8.1",
+    "zod": "^4.2.0"
+  }
 }
